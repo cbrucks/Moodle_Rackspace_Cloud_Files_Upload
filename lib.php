@@ -15,32 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This plugin is used to access youtube videos
+ * This plugin is used to upload to rackspace cloud files
  *
  * @since 2.0
- * @package    repository_youtube
- * @copyright  2010 Dongsheng Cai {@link http://dongsheng.org}
+ * @package    repository_rackspace_cf_upload
+ * @copyright  2013 Chris Brucks
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->dirroot . '/repository/lib.php'); //Includes the CloudFiles PHP API.. Ensure the API files are located in your Global includes folder or in the same directory
+require_once($CFG->dirroot . '/repository/lib.php'); // Includes the CloudFiles PHP API.. Ensure the API files are located in your Global includes folder or in the same directory
 require_once('cloudfiles.php');
 
-
 /**
- * repository_youtube class
+ * repository_racksace_cloud_files_upload class
  *
  * @since 2.0
- * @package    repository_youtube
- * @copyright  2009 Dongsheng Cai {@link http://dongsheng.org}
+ * @package    repository_rackspace_cf_upload
+ * @copyright  2013 Chris Brucks
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class repository_rackspace_cloud_files extends repository {
+class repository_rackspace_cf_upload extends repository {
 
     public $cdn;
 
     /**
-     * Youtube plugin constructor
+     * Rackspace Cloud Files plugin constructor
      * @param int $repositoryid
      * @param object $context
      * @param array $options
@@ -48,18 +47,13 @@ class repository_rackspace_cloud_files extends repository {
     public function __construct($repositoryid, $context = SYSCONTEXTID, $options = array()) {
         parent::__construct($repositoryid, $context, $options);
 
-        $this->username = get_config('rackspace_cloud_files', 'username');
-        $this->api_key = get_config('rackspace_cloud_files', 'api_key');
-        $plugin_name = get_config('rackspace_cloud_files', 'pluginname');
-        $this->container_name = (strlen($plugin_name) > 0)? $plugin_name : get_string('default_container', 'repository_rackspace_cloud_files');
-        $this->cdn_enable = get_config('rackspace_cloud_files', 'cdn') == 0;
+        $this->username = get_config('rackspace_cf_upload', 'username');
+        $this->api_key = get_config('rackspace_cf_upload', 'api_key');
+        $plugin_name = get_config('rackspace_cf_upload', 'pluginname');
+        $this->container_name = (strlen($plugin_name) > 0)? $plugin_name : get_string('default_container', 'repository_rackspace_cf_upload');
+        $this->cdn_enable = get_config('rackspace_cf_upload', 'cdn') == 0;
 
         $this->init_connection();
-
-        $file = 'ver/crab/more/container info.txt';
-        $obj = $this->container->create_object($file);
-        $obj->write($this->container->__toString());
-        $this->container->create_paths($file);
     }
 
     private function init_connection() {
@@ -69,7 +63,7 @@ class repository_rackspace_cloud_files extends repository {
             $this->auth->authenticate();
         }
         catch (Exception $e) {
-            throw new moodle_exception('repo_auth_fail', 'repository_rackspace_cloud_files');
+            throw new moodle_exception('repo_auth_fail', 'repository_rackspace_cf');
         }
 
         // Initialize the connection
@@ -102,13 +96,13 @@ class repository_rackspace_cloud_files extends repository {
 
         // Check for required information
         if (empty($this->api_key)) {
-            throw new moodle_exception('need_api_key', 'repository_rackspace_cloud_files');
+            throw new moodle_exception('need_api_key', 'repository_rackspace_cf');
         }
         elseif (empty($this->username)) {
-            throw new moodle_exception('need_username', 'repository_rackspace_cloud_files');
+            throw new moodle_exception('need_username', 'repository_rackspace_cf');
         }
         elseif (empty($this->container_name)) {
-            throw new moodle_exception('need_cont_name', 'repository_rackspace_cloud_files');
+            throw new moodle_exception('need_cont_name', 'repository_rackspace_cf');
         }
 
         $subfolders = explode('/', $path);
@@ -132,6 +126,7 @@ class repository_rackspace_cloud_files extends repository {
         $list['manage'] = null;
         $list['nologin'] = true;
         $list['dynload'] = true;
+        // $list['upload'] = array('label'=>'Select file to upload to Cloud Files', 'id'=>'repository');
         $list['list'] = $this->get_rcf_object_list($path, $page);
 
         return $list;
@@ -212,25 +207,25 @@ class repository_rackspace_cloud_files extends repository {
     public static function type_config_form($mform, $classname = 'repository') {
         parent::type_config_form($mform);
         $strrequired = get_string('required');
-        //$ah = $mform->addElement('select', 'auth_host', get_string('auth_host','repository_rackspace_cloud_files'), array(get_string('US','repository_rackspace_cloud_files'), get_string('UK','repository_rackspace_cloud_files')));
+        //$ah = $mform->addElement('select', 'auth_host', get_string('auth_host','repository_rackspace_cf_upload'), array(get_string('US','repository_rackspace_cf_upload'), get_string('UK','repository_rackspace_cf_upload')));
         //$ah->setMultiple(false);
-        //$ah->setSelected(get_string('US','repository_rackspace_cloud_files'));
+        //$ah->setSelected(get_string('US','repository_rackspace_cf_upload'));
 
-        //$v = $mform->addElement('select', 'version', get_string('version','repository_rackspace_cloud_files'), array(get_string('v1','repository_rackspace_cloud_files'), get_string('v2','repository_rackspace_cloud_files')));
+        //$v = $mform->addElement('select', 'version', get_string('version','repository_rackspace_cf_upload'), array(get_string('v1','repository_rackspace_cf_upload'), get_string('v2','repository_rackspace_cf_upload')));
         //$v->setMultiple(false);
-        //$v->setSelected(get_string('v1','repository_rackspace_cloud_files'));
+        //$v->setSelected(get_string('v1','repository_rackspace_cf_upload'));
 
-        $cdn = $mform->addElement('select', 'cdn', get_string('cdn','repository_rackspace_cloud_files'), array(get_string('on','repository_rackspace_cloud_files'), get_string('off','repository_rackspace_cloud_files')));
+        $cdn = $mform->addElement('select', 'cdn', get_string('cdn','repository_rackspace_cf_upload'), array(get_string('on','repository_rackspace_cf_upload'), get_string('off','repository_rackspace_cf_upload')));
         $cdn->setMultiple(false);
-        $cdn->setSelected(get_string('on','repository_rackspace_cloud_files'));
+        $cdn->setSelected(get_string('on','repository_rackspace_cf_upload'));
 
         $mform->addElement('static','spacer','','');
 
         $mform->addElement('static','auth_error','','');
 
-        $mform->addElement('text', 'username', get_string('username', 'repository_rackspace_cloud_files'));
-        $mform->addElement('text', 'api_key', get_string('api_key', 'repository_rackspace_cloud_files'));
-        $mform->addElement('static', 'instructions', '', get_string('instruct', 'repository_rackspace_cloud_files'));
+        $mform->addElement('text', 'username', get_string('username', 'repository_rackspace_cf_upload'));
+        $mform->addElement('text', 'api_key', get_string('api_key', 'repository_rackspace_cf_upload'));
+        $mform->addElement('static', 'instructions', '', get_string('instruct', 'repository_rackspace_cf_upload'));
 
         //$mform->addRule('auth_host', $strrequired, 'required', null, 'client');
         //$mform->addRule('version', $strrequired, 'required', null, 'client');
@@ -244,11 +239,11 @@ class repository_rackspace_cloud_files extends repository {
 
         if (!ctype_alnum($api_key) || !is_numeric('0x'.$api_key)) {
         // The API Key is not a hex string.  Throw a moodle error.
-            $errors['api_key'] = get_string('invalid_api_key', 'repository_rackspace_cloud_files');
+            $errors['api_key'] = get_string('invalid_api_key', 'repository_rackspace_cf_upload');
         }
         elseif (strlen(trim($username)) <=0) {
         // The username is blank.  Throw a moodle error.
-            $errors['username'] = get_string('invalid_username', 'repository_rackspace_cloud_files');
+            $errors['username'] = get_string('invalid_username', 'repository_rackspace_cf_upload');
         } 
         else
         {
@@ -268,7 +263,7 @@ class repository_rackspace_cloud_files extends repository {
                 //Calling the Authenticate method returns a valid storage token and allows you to connect to the CloudFiles Platform.
                 $auth->authenticate();
             } catch (Exception $e) {
-                $errors['auth_error'] = get_string('auth_error', 'repository_rackspace_cloud_files').'<br />"'.$e->getMessage().'"';
+                $errors['auth_error'] = get_string('auth_error', 'repository_rackspace_cf_upload').'<br />"'.$e->getMessage().'"';
             }
         }
         return $errors;

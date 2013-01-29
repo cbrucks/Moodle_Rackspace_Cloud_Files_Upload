@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'repository_dropbox', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'repository_rackspace_cf_upload', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   repository_rackspace_cloud_files
+ * @package   repository_rackspace_cf
  * @copyright 2013 Chris brucks
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['configplugin'] = 'Rackspace Cloud Files configuration';
-$string['pluginname'] = 'Rackspace Cloud Files';
+$string['configplugin'] = 'Rackspace Cloud Files Upload Configuration';
+$string['pluginname'] = 'Rackspace Cloud Files Upload';
 
 /*
  * Admin Plugin Setup Form Strings
@@ -55,7 +55,7 @@ $string['auth_error'] = 'Authentication unsuccessful!';
 /*
  * 
  */
-$string['repo_auth_fail'] = 'Rackspace Cloud File Repository authentication failure.';
+$string['repo_auth_fail'] = 'Rackspace Cloud Files Upload Repository authentication failure.';
  
 $string['need_api_key'] = 'API key is needed to access this repository.  Contact the administrator to restart the plugin.';
 $string['need_username'] = 'Username is needed to access this repository.  Contact the administrator to restart the plugin.';

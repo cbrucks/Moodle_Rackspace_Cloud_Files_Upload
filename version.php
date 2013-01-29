@@ -28,5 +28,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2013012300;
 $plugin->requires  = 2012120300;
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->component = 'repository_rackspace_cloud_files';
+$plugin->component = 'repository_rackspace_cf_upload';
 $plugin->release   = '1.0';
