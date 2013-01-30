@@ -29,7 +29,7 @@ $string['pluginname'] = 'Rackspace Cloud Files Upload';
  * Admin Plugin Setup Form Strings
  */
 $string['default_container'] = 'Moodle_Public_Repo';
- 
+
 $string['cdn'] = 'CDN (Content Delivery Network)';
 $string['on'] = 'on';
 $string['off'] = 'off';
@@ -53,11 +53,12 @@ $string['instruct'] = 'You can get your <b>API Key</b> from your <a href="http:/
 $string['auth_error'] = 'Authentication unsuccessful!';
 
 /*
- * 
+ *
  */
 $string['repo_auth_fail'] = 'Rackspace Cloud Files Upload Repository authentication failure.';
- 
+
 $string['need_api_key'] = 'API key is needed to access this repository.  Contact the administrator to restart the plugin.';
 $string['need_username'] = 'Username is needed to access this repository.  Contact the administrator to restart the plugin.';
 $string['need_cont_name'] = 'The container name is needed to access this repository.  Contact the administrator to restart the plugin.';
- 
+
+$string['upload'] = 'File to upload to Cloud Files';

@@ -105,95 +105,21 @@ class repository_rackspace_cf_upload extends repository {
             throw new moodle_exception('need_cont_name', 'repository_rackspace_cf');
         }
 
-        $subfolders = explode('/', $path);
-        $nav = array(array('name'=>'root', 'path'=>''));
-        $prev_dir = '';
-        foreach ($subfolders as $sub) {
-            if (empty($sub)) {
-                continue;
-            }
-            if (empty($prev_dir)) {
-                $prev_dir = $sub;
-            }
-            else {
-                $prev_dir .= '/'.$sub;
-            }
-            $nav[] = array('name'=>$sub, 'path'=>$prev_dir);
-        }
-
         $list = array();
-        $list['path'] = $nav; //array(array('name'=>'root','path'=>'/'), array('name'=>'subfolder', 'path'=>'/subfolder'));
         $list['manage'] = null;
         $list['nologin'] = true;
-        $list['dynload'] = true;
-        // $list['upload'] = array('label'=>'Select file to upload to Cloud Files', 'id'=>'repository');
-        $list['list'] = $this->get_rcf_object_list($path, $page);
+        $list['nosearch'] = true;
+        $list['norefresh'] = true;
+        $list['allowcaching'] = false;
+        $list['upload'] = array('label'=>get_string('upload', 'repository_rackspace_cf_upload'), 'id'=>'repo-form');
+        $list['list'] = array();
 
         return $list;
     }
 
-    private function get_rcf_object_list($path = '', $page = ''){
-        global $OUTPUT;
-
-        if (empty($this->container)) {
-            $this->init_connection();
-        }
-
-        // Get all objects in designated path
-        $objects = $this->container->get_objects(0, NULL, NULL, $path, '/');
-
-        foreach($objects as $obj) {
-            if (preg_match('/^[^.]+\.[a-zA-Z0-9]+$/', $obj->name)) {
-                // Add reference as a file
-                $dir_list[] = array('title'=>str_replace($path.'/', '', $obj->name), 'date'=>$obj->last_modified, 'size'=>$obj->content_length, 'source'=>$this->container->cdn_uri.'/'.$obj->name, 'url'=>$this->container->cdn_uri.'/'.$obj->name, 'thumbnail'=>$this->container->cdn_uri.'/'.$obj->name);
-            }
-            else {
-                // Add reference as a folder
-                $dir_list[] = array('title'=>str_replace($path.'/', '', $obj->name), 'date'=>$obj->last_modified, 'size'=>$obj->content_length, 'path'=>$obj->name, 'children'=>array(), 'thumbnail' => $OUTPUT->pix_url(file_folder_icon(90))->out(false));
-            }
-        }
-
-        // $dir_list = array(
-            // array('title'=>'filename1', 'date'=>'1340002147', 'size'=>'10451213', 'source'=>'http://www.moodle.com/dl.rar'),
-            // array('title'=>'folder', 'date'=>'1340002147', 'size'=>'0', 'children'=>array())
-        // );
-
-        return $dir_list;
-    }
-
-    public function search($search_text, $page = 0) {
-        $ret = array();
-        $ret['dynload'] = true;
-        $ret['nologin'] = true;
-        $ret['list'] = array();
-
-        // Initialize the connection if it is not up to date
-        if (empty($this->container)) {
-            $this->init_connection();
-        }
-
-        // Get all objects in designated path
-        $objects = $this->container->get_objects();
-
-        // Initialize the results array and the levenshtein array
-        $search_res = array();
-        $levenshtein = 1.0;
-
-        // Compare each each file name to the search text
-        foreach ($objects as $obj) {
-            $file_name = end(explode('/', $obj->name));
-            $levenshtein = levenshtein($search_text, substr($file_name, 0, strpos($file_name, '.'))) / ((strlen($search_text) > strlen($file_name))? strlen($search_text) : strlen($file_name));
-            if ($levenshtein < 0.5) {
-                if (preg_match('/^[^.]+\.[a-zA-Z0-9]+$/', $obj->name)) {
-                    $search_res[] = array('title'=>$file_name, 'date'=>$obj->last_modified, 'size'=>$obj->content_length, 'source'=>$this->container->cdn_uri.'/'.$obj->name, 'url'=>$this->container->cdn_uri.'/'.$obj->name, 'thumbnail'=>$this->container->cdn_uri.'/'.$obj->name);
-                }
-            }
-        }
-
-        $ret['list'] = $search_res;
-
-        return $ret;
-
+    public function upload($saveas_filename, $maxbytes) {
+        $obj = $this->container->create_object($saveas_filename);
+        $obj->write('blah blah blah');
     }
 
     public function global_search() {
