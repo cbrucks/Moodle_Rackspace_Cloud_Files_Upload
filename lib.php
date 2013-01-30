@@ -120,6 +120,7 @@ class repository_rackspace_cf_upload extends repository {
     public function upload($saveas_filename, $maxbytes) {
         $obj = $this->container->create_object($saveas_filename);
         $obj->write('blah blah blah');
+        $this->container->create_paths($saveas_filename);
     }
 
     public function global_search() {
