@@ -24,6 +24,7 @@
  */
 require_once($CFG->dirroot . '/repository/lib.php'); // Includes the CloudFiles PHP API.. Ensure the API files are located in your Global includes folder or in the same directory
 require_once('cloudfiles.php');
+require_once($CFG->dirroot . '/lib/accesslib.php');
 
 /**
  * repository_racksace_cloud_files_upload class
@@ -118,9 +119,20 @@ class repository_rackspace_cf_upload extends repository {
     }
 
     public function upload($saveas_filename, $maxbytes) {
-        $obj = $this->container->create_object($saveas_filename);
-        $obj->write('blah blah blah');
-        $this->container->create_paths($saveas_filename);
+        global $USER, $COURSE;
+
+        $saveas_filename = clean_param($saveas_filename, PARAM_FILE);
+
+        $file = clean_param($USER->username, PARAM_FILE).'/'.clean_param($COURSE->fullname, PARAM_FILE).'/'.$saveas_filename;
+        $obj = $this->container->create_object($file);
+
+        $obj->write(file_get_contents($_FILES['repo_upload_file']['tmp_name']));
+        $this->container->create_paths($file);
+
+        return array(
+            'url'=>$obj->public_uri(),
+            'thumbnail'=>$obj->public_uri(),
+            'file'=>$saveas_filename);
     }
 
     public function global_search() {
